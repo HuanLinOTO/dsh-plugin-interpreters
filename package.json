@@ -1,7 +1,7 @@
 {
   "name": "@dsh-external/dsh-interpreters",
   "version": "0.1.0",
-  "description": "Exposes run_python and run_node tools with configurable interpreter paths; settings page lets users set the executable locations.",
+  "description": "Exposes run_python and run_node tools with configurable interpreter paths; settings card (via /api/interpreters gateway) lets users set the executable locations.",
   "type": "module",
   "private": true,
   "license": "MIT",
@@ -31,9 +31,8 @@
         "@deepseek-ai/dsh-client-runtime",
         "@deepseek-ai/dsh-client-locale",
         "@deepseek-ai/dsh-client-connection",
-        "@deepseek-ai/dsh-client-ui-settings",
-        "@deepseek-ai/dsh-client-ui-slots",
-        "@deepseek-ai/dsh-api-remotes"
+        "@deepseek-ai/dsh-client-ui-plugin-config",
+        "@deepseek-ai/dsh-client-ui-slots"
       ],
       "platform": "web"
     }
@@ -42,44 +41,54 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "tsdown -c tsdown.config.ts && tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.build.json && node scripts/build-client.mjs && tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-api-remotes": "^0.0.1-rc.1",
+    "@deepseek-ai/cordis": "^4.0.1-rc.1",
     "@deepseek-ai/dsh-client-connection": "^0.0.1",
     "@deepseek-ai/dsh-client-locale": "^0.0.1",
     "@deepseek-ai/dsh-client-runtime": "^0.0.1",
-    "@deepseek-ai/dsh-client-ui-settings": "^0.0.1",
+    "@deepseek-ai/dsh-client-ui-plugin-config": "^0.0.1",
+    "@deepseek-ai/dsh-client-ui-primitives": "^0.0.1",
     "@deepseek-ai/dsh-client-ui-slots": "^0.0.1",
+    "@deepseek-ai/dsh-client-web-react": "^0.0.1",
     "@deepseek-ai/dsh-settings": "^0.0.1",
     "@deepseek-ai/dsh-tools": "^0.0.1",
-    "cordis": "^4.0.0-rc.7",
+    "@deepseek-ai/dsh-type-meta": "^0.0.1-rc.1",
     "react": "^18.2.0",
     "schemastery": "^3.18.0"
   },
   "peerDependenciesMeta": {
-    "@deepseek-ai/dsh-api-remotes": { "optional": true },
+    "@deepseek-ai/cordis": { "optional": true },
     "@deepseek-ai/dsh-client-connection": { "optional": true },
     "@deepseek-ai/dsh-client-locale": { "optional": true },
     "@deepseek-ai/dsh-client-runtime": { "optional": true },
-    "@deepseek-ai/dsh-client-ui-settings": { "optional": true },
+    "@deepseek-ai/dsh-client-ui-plugin-config": { "optional": true },
+    "@deepseek-ai/dsh-client-ui-primitives": { "optional": true },
     "@deepseek-ai/dsh-client-ui-slots": { "optional": true },
+    "@deepseek-ai/dsh-client-web-react": { "optional": true },
     "@deepseek-ai/dsh-settings": { "optional": true },
     "@deepseek-ai/dsh-tools": { "optional": true },
-    "cordis": { "optional": true },
+    "@deepseek-ai/dsh-type-meta": { "optional": true },
     "react": { "optional": true },
     "schemastery": { "optional": true }
   },
   "devDependencies": {
+    "@deepseek-ai/cordis": "link:C:/Users/Administrator/.dsh/source/current/vendor/cordis",
     "@deepseek-ai/dsh-client-connection": "link:C:/Users/Administrator/.dsh/source/current/packages/client/connection",
     "@deepseek-ai/dsh-client-locale": "link:C:/Users/Administrator/.dsh/source/current/packages/client/locale",
     "@deepseek-ai/dsh-client-runtime": "link:C:/Users/Administrator/.dsh/source/current/packages/client/runtime",
-    "@deepseek-ai/dsh-client-ui-settings": "link:C:/Users/Administrator/.dsh/source/current/packages/client/ui-settings",
+    "@deepseek-ai/dsh-client-ui-plugin-config": "link:C:/Users/Administrator/.dsh/source/current/packages/client/ui-plugin-config",
+    "@deepseek-ai/dsh-client-ui-primitives": "link:C:/Users/Administrator/.dsh/source/current/packages/client/ui-primitives",
     "@deepseek-ai/dsh-client-ui-slots": "link:C:/Users/Administrator/.dsh/source/current/packages/client/ui-slots",
+    "@deepseek-ai/dsh-client-web-react": "link:C:/Users/Administrator/.dsh/source/current/packages/client/web-react",
     "@deepseek-ai/dsh-settings": "link:C:/Users/Administrator/.dsh/source/current/packages/settings/settings",
     "@deepseek-ai/dsh-tools": "link:C:/Users/Administrator/.dsh/source/current/packages/core/tools",
+    "@deepseek-ai/dsh-type-meta": "link:C:/Users/Administrator/.dsh/source/current/packages/typert/type-meta",
     "@types/node": "^22.20.0",
     "@types/react": "~18.3.1",
+    "esbuild": "^0.28.2",
+    "lightningcss": "^1.29.2",
     "tsdown": "^0.22.2",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"

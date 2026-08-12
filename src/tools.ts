@@ -18,13 +18,8 @@
 import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { ToolRunContext } from '@deepseek-ai/dsh-tools'
+import type { ResolvedConfig } from './config.js'
 import { runCode, type RunResult } from './runner.js'
-
-export interface ResolvedConfig {
-  pythonPath: string
-  nodePath: string
-  timeoutMs: number
-}
 
 export interface RunCodeArgs {
   code: string

@@ -15,12 +15,8 @@
  * @module dsh-interpreters/tools
  */
 import type { Context } from '@deepseek-ai/cordis';
+import type { ResolvedConfig } from './config.js';
 import { type RunResult } from './runner.js';
-export interface ResolvedConfig {
-    pythonPath: string;
-    nodePath: string;
-    timeoutMs: number;
-}
 export interface RunCodeArgs {
     code: string;
     cwd?: string;

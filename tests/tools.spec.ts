@@ -11,13 +11,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { resolveConfig, type Config } from '../src/index.ts'
+import { resolveConfig, type Config } from '../src/config.ts'
 import {
   buildPythonDescription,
   buildNodeDescription,
   registerTools,
-  type ResolvedConfig,
 } from '../src/tools.ts'
+import type { ResolvedConfig } from '../src/config.ts'
 import { runCode } from '../src/runner.ts'
 
 describe('resolveConfig', () => {
