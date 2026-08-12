@@ -37,7 +37,10 @@ type SettingsPageProps = PropsRuntime<'settings.section'> & PropsLocale<'interpr
  */
 export function SettingsPage(props: SettingsPageProps) {
   const { t, scope } = props
-  const snapshot = useSyncExternalStore(scope.subscribe, scope.getSnapshot)
+  const snapshot = useSyncExternalStore(
+    (listener) => scope.subscribe(listener),
+    () => scope.getSnapshot(),
+  )
 
   if (snapshot.status === 'loading') {
     return <div>{t('loading')}</div>
