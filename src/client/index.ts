@@ -13,12 +13,12 @@
  * type-only (erased at build) — values arrive via cordis injection
  * (`ctx.get('connection')`, slot inject faces).
  *
- * @module @dsh-external/dsh-interpreters/client
+ * @module @huanlin/dsh-plugin-interpreters/client
  */
 
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the client connection Context merge (ctx.connection) and
-// the `ClientConnectionRpc` / `ConnectionHandle` types.
+// the `connection/reset` event type (used for pushed invalidations).
 import type {} from '@deepseek-ai/dsh-client-connection/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
@@ -26,9 +26,8 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // `slots.inject` matches the section's slot declaration. Cross-plugin
 // collaboration goes through the service, never a value import (client bundle
 // purity gate).
-import type {} from '@deepseek-ai/dsh-client-ui-plugin-config/client'
+import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
-import type { ConnectionHandle } from '@deepseek-ai/dsh-client-connection/client'
 import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
 import { InterpretersCard } from './InterpretersCard.tsx'
 import { InterpretersCardController, refreshIfLoaded } from './store.ts'
@@ -59,11 +58,9 @@ export const inject = ['slots', 'locale', 'connection']
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-interpreters: dictionaries')
 
-  const connection = ctx.get('connection') as ConnectionHandle
-  // The store reads/writes the interpreters config over the connection's
-  // generic RPC channel (the host gateway `/api/interpreters/get` +
-  // `/api/interpreters/set`).
-  const controller = new InterpretersCardController(connection.rpc)
+  // The store reads/writes the interpreters config over the plugin's
+  // self-hosted HTTP route (`/interpreters/api/get` + `/interpreters/api/set`).
+  const controller = new InterpretersCardController()
   const useSnapshot = bindSnapshotSelector(controller.store)
 
   // Pushed invalidations converge the open surface without polling. The dsh

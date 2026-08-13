@@ -1,18 +1,17 @@
 /**
  * store.ts — the interpreters card's staged form over the
- * `/api/interpreters/get|set` RPC gateway.
+ * `/interpreters/api/get|set` HTTP route.
  *
  * The DSH settings RPC domain only serves allowlisted namespaces to
  * configuration clients, so this store reads and writes the `interpreters`
- * namespace through the host's typertGateway dispatch
- * (`connection.rpc.call('/api', 'interpreters/get'|'set', { args: {...} })`)
- * instead of a settingsScope. State publishes through a `SnapshotStore` so the
- * card binds a selector hook via `bindSnapshotSelector`; the store tracks load
- * status, the staged draft, and the apply lifecycle (idle/saving/saved/error).
+ * namespace through the plugin's self-hosted HTTP route
+ * (`fetch('/interpreters/api/get'|'set')`) instead of the host's typertRemote
+ * dispatch. State publishes through a `SnapshotStore` so the card binds a
+ * selector hook via `bindSnapshotSelector`; the store tracks load status,
+ * the staged draft, and the apply lifecycle (idle/saving/saved/error).
  *
  * @module dsh-interpreters/client/store
  */
-import type { ClientConnectionRpc } from '@deepseek-ai/dsh-client-connection/client';
 import { type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
 /** The persisted shape of the `interpreters` namespace. */
 export interface InterpretersSettings {
@@ -56,22 +55,18 @@ declare function formatText(value: unknown): string;
  * The card's staged form over the interpreters settings.
  *
  * The store publishes through a `SnapshotStore` because slot components read
- * through a snapshot selector; both the gateway read and the local drafts
+ * through a snapshot selector; both the HTTP read and the local drafts
  * change underneath, and every projection is rebuilt from the two together.
  */
 export declare class InterpretersCardController {
-    private readonly rpc;
     readonly store: SnapshotStore<InterpretersCardState>;
     /** True after the first successful load; gates `connection/reset` refreshes. */
     loaded: boolean;
     private generation;
     private staged;
+    constructor();
     /**
-     * @param rpc - the connection's generic RPC caller.
-     */
-    constructor(rpc: ClientConnectionRpc);
-    /**
-     * Read the resolved config from the Host gateway and publish it.
+     * Read the resolved config from the Host HTTP route and publish it.
      * @returns settlement after the read.
      */
     load(): Promise<void>;

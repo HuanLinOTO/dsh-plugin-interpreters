@@ -15,7 +15,8 @@
     "paths": {
       "@deepseek-ai/cordis": ["C:/Users/Administrator/.dsh/source/current/vendor/cordis/lib/types/index.d.ts"],
       "@deepseek-ai/cosmokit": ["C:/Users/Administrator/.dsh/source/current/vendor/cosmokit/lib/types/index.d.ts"],
-      "@deepseek-ai/schemastery": ["C:/Users/Administrator/.dsh/source/current/vendor/schemastery/lib/types/index.d.ts"]
+      "@deepseek-ai/schemastery": ["C:/Users/Administrator/.dsh/source/current/vendor/schemastery/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-host-webserver": ["C:/Users/Administrator/.dsh/source/current/packages/host/webserver/lib/types/index.d.ts"]
     }
   },
   "include": ["src"]

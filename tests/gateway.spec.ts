@@ -1,19 +1,19 @@
 /**
- * gateway.spec.ts — unit tests for the interpreters config gateway.
+ * gateway.spec.ts — unit tests for the interpreters HTTP gateway.
  *
  * Tests:
- *   - get(): returns the resolved config from the bridge source
- *   - set(): throws when the settings service is unavailable
- *   - set(): writes the filtered patch to settings.update and returns updated config
- *   - set(): filters unknown keys, null, undefined, and mistyped values
- *   - set(): no-op patch returns current config without calling settings.update
+ *   - extractPatch: filters unknown keys, null, undefined, and mistyped values
+ *   - extractPatch: accepts valid patches with correct types
+ *   - handleSet: throws when the settings service is unavailable
+ *   - handleSet: writes the filtered patch to settings.update and returns updated config
+ *   - handleSet: no-op patch returns current config without calling settings.update
+ *   - handleSet: all-filtered patch returns current config without calling settings.update
  *
  * @module dsh-interpreters/tests/gateway
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { InterpretersConfigGateway } from '../src/gateway.ts'
+import { extractPatch, handleSet } from '../src/gateway.ts'
 import type { InterpretersSettingsBridge } from '../src/settings.ts'
 import type { Config } from '../src/config.ts'
 
@@ -25,42 +25,63 @@ function bridgeOf(source: Config): InterpretersSettingsBridge {
   }
 }
 
-/** Construct a gateway with a real cordis Context (no settings service mounted). */
-function gatewayWithoutSettings(bridge: InterpretersSettingsBridge): InterpretersConfigGateway {
-  const ctx = new Context()
-  return new InterpretersConfigGateway(ctx, bridge)
+/** Build a mock settings service with a controllable update. */
+function settingsWith(update: (ns: string, patch: Record<string, unknown>) => Promise<void>): unknown {
+  return { update: vi.fn(update) }
 }
 
-describe('InterpretersConfigGateway.get', () => {
-  it('returns the resolved config from the bridge source', () => {
-    const gateway = gatewayWithoutSettings(bridgeOf({ pythonPath: '/usr/bin/python3', nodePath: 'node', timeoutMs: 5000 }))
-    const result = gateway.get()
-    expect(result.config).toEqual({ pythonPath: '/usr/bin/python3', nodePath: 'node', timeoutMs: 5000 })
+describe('extractPatch', () => {
+  it('accepts a valid patch with correct types', () => {
+    const patch = extractPatch({ patch: { pythonPath: '/usr/bin/python3', nodePath: 'node', timeoutMs: 5000 } })
+    expect(patch).toEqual({ pythonPath: '/usr/bin/python3', nodePath: 'node', timeoutMs: 5000 })
   })
 
-  it('applies fallbacks for missing values', () => {
-    const gateway = gatewayWithoutSettings(bridgeOf({}))
-    const result = gateway.get()
-    expect(result.config).toEqual({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
+  it('filters unknown keys from the patch', () => {
+    const patch = extractPatch({ patch: { pythonPath: '/x', unknownField: 'malicious' } })
+    expect(patch).toEqual({ pythonPath: '/x' })
   })
 
-  it('applies fallbacks for invalid values', () => {
-    const gateway = gatewayWithoutSettings(bridgeOf({ pythonPath: '', nodePath: '', timeoutMs: -1 }))
-    const result = gateway.get()
-    expect(result.config).toEqual({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
+  it('filters null and undefined values from the patch', () => {
+    const patch = extractPatch({ patch: { pythonPath: '/x', nodePath: null, timeoutMs: undefined } })
+    expect(patch).toEqual({ pythonPath: '/x' })
+  })
+
+  it('filters mistyped values from the patch', () => {
+    const patch = extractPatch({ patch: { pythonPath: 123, timeoutMs: 'not-a-number' } })
+    expect(patch).toEqual({})
+  })
+
+  it('returns empty when body is not an object', () => {
+    expect(extractPatch(null)).toEqual({})
+    expect(extractPatch('string')).toEqual({})
+    expect(extractPatch(42)).toEqual({})
+    expect(extractPatch(undefined)).toEqual({})
+  })
+
+  it('returns empty when body has no patch field', () => {
+    expect(extractPatch({})).toEqual({})
+    expect(extractPatch({ other: 'value' })).toEqual({})
+  })
+
+  it('returns empty when patch is not an object', () => {
+    expect(extractPatch({ patch: 'string' })).toEqual({})
+    expect(extractPatch({ patch: 42 })).toEqual({})
+    expect(extractPatch({ patch: null })).toEqual({})
   })
 })
 
-describe('InterpretersConfigGateway.set', () => {
+describe('handleSet', () => {
   it('throws when the settings service is unavailable', async () => {
-    const gateway = gatewayWithoutSettings(bridgeOf({}))
-    await expect(gateway.set({ pythonPath: '/x' })).rejects.toThrow('settings service is unavailable')
+    const bridge = bridgeOf({})
+    await expect(handleSet({ patch: { pythonPath: '/x' } }, undefined, bridge))
+      .rejects.toThrow('settings service is unavailable')
   })
 
   it('returns current config without writing when patch is empty', async () => {
     const update = vi.fn(async () => {})
-    const gateway = await gatewayWithSettings(bridgeOf({ pythonPath: 'python' }), update)
-    const result = await gateway.set({})
+    const settings = settingsWith(update)
+    const bridge = bridgeOf({ pythonPath: 'python' })
+    const result = await handleSet({ patch: {} }, settings as never, bridge)
     expect(update).not.toHaveBeenCalled()
     expect(result.config.pythonPath).toBe('python')
   })
@@ -70,63 +91,36 @@ describe('InterpretersConfigGateway.set', () => {
     const update = vi.fn(async (_ns: string, patch: Record<string, unknown>) => {
       source = { ...source, ...patch }
     })
-    const gateway = await gatewayWithSettings({ source: () => source, onChange: () => {} }, update)
-    const result = await gateway.set({ pythonPath: '/opt/python3.12', timeoutMs: 5000 })
+    const settings = settingsWith(update)
+    const bridge: InterpretersSettingsBridge = { source: () => source, onChange: () => {} }
+    const result = await handleSet({ patch: { pythonPath: '/opt/python3.12', timeoutMs: 5000 } }, settings as never, bridge)
     expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/opt/python3.12', timeoutMs: 5000 })
     expect(result.config.pythonPath).toBe('/opt/python3.12')
     expect(result.config.timeoutMs).toBe(5000)
   })
 
-  it('filters unknown keys from the patch', async () => {
+  it('filters unknown keys before writing', async () => {
     const update = vi.fn(async () => {})
-    const gateway = await gatewayWithSettings(bridgeOf({}), update)
-    await gateway.set({ pythonPath: '/x', unknownField: 'malicious' } as never)
+    const settings = settingsWith(update)
+    const bridge = bridgeOf({})
+    await handleSet({ patch: { pythonPath: '/x', unknownField: 'malicious' } }, settings as never, bridge)
     expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/x' })
-  })
-
-  it('filters null and undefined values from the patch', async () => {
-    const update = vi.fn(async () => {})
-    const gateway = await gatewayWithSettings(bridgeOf({}), update)
-    await gateway.set({ pythonPath: '/x', nodePath: null, timeoutMs: undefined } as never)
-    expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/x' })
-  })
-
-  it('filters mistyped values from the patch', async () => {
-    const update = vi.fn(async () => {})
-    const gateway = await gatewayWithSettings(bridgeOf({}), update)
-    // pythonPath must be a string; timeoutMs must be a finite number.
-    await gateway.set({ pythonPath: 123, timeoutMs: 'not-a-number' } as never)
-    expect(update).not.toHaveBeenCalled()
   })
 
   it('returns current config without writing when all fields are filtered out', async () => {
     const update = vi.fn(async () => {})
-    const gateway = await gatewayWithSettings(bridgeOf({ pythonPath: 'python' }), update)
-    const result = await gateway.set({ unknownField: 'x' } as never)
+    const settings = settingsWith(update)
+    const bridge = bridgeOf({ pythonPath: 'python' })
+    const result = await handleSet({ patch: { unknownField: 'x' } }, settings as never, bridge)
     expect(update).not.toHaveBeenCalled()
     expect(result.config.pythonPath).toBe('python')
   })
-})
 
-/**
- * Construct a gateway with a mock settings service mounted on the context.
- * @param bridge - the settings bridge.
- * @param update - the mock `settings.update` implementation.
- * @returns the gateway (with `this.settings` populated by the inject callback).
- */
-async function gatewayWithSettings(
-  bridge: InterpretersSettingsBridge,
-  update: (ns: string, patch: Record<string, unknown>) => Promise<void>,
-): Promise<InterpretersConfigGateway> {
-  const ctx = new Context()
-  const mockSettings = {
-    update: vi.fn(update),
-  }
-  ctx.provide('settings', mockSettings)
-  const gateway = new InterpretersConfigGateway(ctx, bridge)
-  // Cordis `ctx.inject` callbacks fire on the microtask queue after the
-  // service registry settles; wait one tick before returning so
-  // `this.settings` is populated.
-  await new Promise((resolve) => setTimeout(resolve, 0))
-  return gateway
-}
+  it('returns current config without writing when patch contains only mistyped values', async () => {
+    const update = vi.fn(async () => {})
+    const settings = settingsWith(update)
+    const bridge = bridgeOf({})
+    await handleSet({ patch: { pythonPath: 123, timeoutMs: 'bad' } }, settings as never, bridge)
+    expect(update).not.toHaveBeenCalled()
+  })
+})

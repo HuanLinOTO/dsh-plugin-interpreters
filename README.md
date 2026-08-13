@@ -7,7 +7,7 @@ DSH 插件：暴露 `run_python` 和 `run_node` 两个模型可调用工具，�
 - **工具**：`run_python` / `run_node`，通过 `spawn(executable, ['-'])` 执行代码，代码经 stdin 传入（无命令行长度限制）
 - **设置持久化**：通过 `ctx.settings` 命名空间 `interpreters` 持久化到 `$DSH_HOME/settings.yaml`
 - **动态 description**：工具的 `description` 在注册时根据配置计算，包含解释器路径；设置变更时通过 `bridge.onChange()` 自动重新注册
-- **配置暴露（GatewayService 模式）**：DSH 的 settings RPC 域（api-proxy）只向配置客户端提供白名单命名空间（`interpreters` 不在其中），所以浏览器通过 host 内置的 typertGateway `/api` RPC 通道读写 `interpreters` 命名空间——`InterpretersConfigGateway` 继承 `GatewayService` 并用 `@Remote('get')` / `@Remote('set')` 标记方法，typertGateway 的 SRC discovery 自动 claim `/api/interpreters/get` 和 `/api/interpreters/set` 端点。gateway 在 host 进程内 in-process 调 `ctx.settings.update(ns, patch)`，绕过 wire-layer allowlist
+- **配置暴露（TypertRemoteService 模式）**：DSH 的 settings RPC 域（api-proxy）只向配置客户端提供白名单命名空间（`interpreters` 不在其中），所以浏览器通过 host 内置的 typertRemote `/api` RPC 通道读写 `interpreters` 命名空间——`InterpretersConfigGateway` 继承 `TypertRemoteService` 并用 `@Remote('get')` / `@Remote('set')` 标记方法，typertRemote 的 SRC discovery 自动 claim `/api/interpreters/get` 和 `/api/interpreters/set` 端点。gateway 在 host 进程内 in-process 调 `ctx.settings.update(ns, patch)`，绕过 wire-layer allowlist
 - **客户端 bundle**：配置卡片通过 `settings.plugin.item` slot 注册（「插件配置」分区），卡片用 `connection.rpc.call('/api', 'interpreters/get'|'set', { args: {...} })` 读写，不依赖 `settingsScope`（因为 `interpreters` 不在白名单中）；`connection/reset` 事件触发卡片重载
 
 ## 开发
@@ -26,7 +26,7 @@ src/
 ├── index.ts              # Host 入口：name, inject, apply（实例化 bridge + gateway + 工具注册）
 ├── config.ts             # Config schema (schemastery), ResolvedConfig, resolveConfig
 ├── settings.ts           # installInterpretersSettings: 注册 namespace，返回 bridge (source() + onChange())
-├── gateway.ts            # InterpretersConfigGateway: GatewayService + @Remote('get'|'set')
+├── gateway.ts            # InterpretersConfigGateway: TypertRemoteService + @Remote('get'|'set')
 ├── tools.ts              # registerTools: 注册 run_python + run_node
 ├── runner.ts             # runCode: spawn + stdin + stdout/stderr 收集
 └── client/
@@ -63,7 +63,7 @@ pnpm run typecheck && pnpm test && pnpm run build
 ```
 
 验证 `lib/` 产物：
-- `lib/index.js` — host bundle（ESM，external: `@deepseek-ai/dsh-type-meta`, `@deepseek-ai/dsh-settings`, `@deepseek-ai/dsh-tools`, `schemastery`）
+- `lib/index.js` — host bundle（ESM，external: `@deepseek-ai/dsh-typert-protocol`, `@deepseek-ai/dsh-settings`, `@deepseek-ai/dsh-tools`, `schemastery`）
 - `lib/client.js` — client bundle（CJS，`window.__ModuleLoader__.load` 包裹，external: `react`）
 - `lib/types/` — TypeScript 声明文件
 - `cordis.patch.yml` — bundle 配置层

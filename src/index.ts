@@ -6,45 +6,46 @@
  * through the settings seam under the `interpreters` namespace in
  * `$DSH_HOME/settings.yaml`; runtime edits dispose and re-register the tools
  * so the model immediately sees the updated path. The browser reaches the
- * same namespace through a `GatewayService` RPC (the DSH settings RPC domain
- * only serves allowlisted namespaces to configuration clients, so this plugin
- * exposes `/api/interpreters/get|set` through the host's typertGateway
- * instead, which bypasses the wire-layer allowlist by calling the settings
- * seam in-process).
+ * same namespace through a self-hosted `/interpreters/api` HTTP route
+ * (the DSH settings RPC domain only serves allowlisted namespaces to
+ * configuration clients, so this plugin exposes its own route through
+ * `ctx.webServer.register`, bypassing the wire-layer allowlist by calling
+ * the settings seam in-process).
  *
  * Architecture:
  *   - `installInterpretersSettings` registers the namespace and exposes a
  *     `source()` thunk + `onChange()` subscription.
- *   - `InterpretersConfigGateway` claims `/api/interpreters/get|set` and
+ *   - `registerHttpGateway` claims `/interpreters/api/get|set` and
  *     reads/writes through the bridge + `ctx.settings` in-process.
  *   - The tool registration is re-run on every `bridge.onChange` notification
  *     so the model-visible description tracks the live interpreter path.
  *   - Headless assemblies without a settings provider fall back to the
- *     composition config (no persistence, no live reload, gateway `set()`
- *     throws a clear "settings service unavailable" error).
+ *     composition config (no persistence, no live reload, the `set`
+ *     endpoint returns a clear "settings service unavailable" error).
  *
- * @module @dsh-external/dsh-interpreters
+ * @module @huanlin/dsh-plugin-interpreters
  */
 
 import type { Context } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-tools'
 import { type Config, resolveConfig } from './config.js'
-import { InterpretersConfigGateway } from './gateway.js'
+import { registerHttpGateway } from './gateway.js'
 import { installInterpretersSettings } from './settings.js'
 import { registerTools } from './tools.js'
 
 export { Config, resolveConfig, type ResolvedConfig } from './config.js'
-export { InterpretersConfigGateway, type InterpretersConfigPatch, type InterpretersConfigView } from './gateway.js'
+export { registerHttpGateway, type InterpretersConfigPatch, type InterpretersConfigView } from './gateway.js'
 export { SETTINGS_NAMESPACE, type InterpretersSettingsBridge } from './settings.js'
 
 export const name = 'dsh-interpreters'
-export const inject = ['tools']
+export const inject = ['tools', 'webServer']
 
 /**
  * Plugin body: register tools with the composition config, then swap to
  * settings-resolved config when the settings service mounts, and expose the
- * config through a `/api/interpreters/get|set` gateway.
- * @param ctx - host context carrying `tools`.
+ * config through a `/interpreters/api/get|set` HTTP route.
+ * @param ctx - host context carrying `tools` and `webServer`.
  * @param config - resolved composition config (seed).
  */
 export function apply(ctx: Context, config: Config = {} as Config): void {
@@ -60,16 +61,9 @@ export function apply(ctx: Context, config: Config = {} as Config): void {
     disposeTools = registerTools(ctx, resolveConfig(bridge.source()))
   })
 
-  // Register the gateway; typertGateway SRC discovery claims `/api/interpreters/*`.
-  // Multi-fiber dedupe: cordis Service construction throws `"has been registered"`
-  // when a second fiber of this plugin tries to claim the same service key.
-  try {
-    new InterpretersConfigGateway(ctx, bridge)
-    ctx.logger('dsh-interpreters').info('gateway registered successfully')
-  } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes('has been registered')) throw error
-    ctx.logger('dsh-interpreters').debug('gateway already registered — multi-fiber dedupe')
-  }
+  // Register the HTTP gateway; the /interpreters/api route claims get/set.
+  registerHttpGateway(ctx, bridge)
+  ctx.logger('dsh-interpreters').info('http gateway registered at /interpreters/api')
 
   ctx.effect(() => () => { disposeTools?.() }, 'dsh-interpreters: cleanup')
 }

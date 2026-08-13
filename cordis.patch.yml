@@ -4,7 +4,7 @@
 # Defaults: python/node from PATH, 30s timeout.
 - insert:
     - id: dsh-interpreters
-      name: '@dsh-external/dsh-interpreters'
+      name: '@huanlin/dsh-plugin-interpreters'
       config:
         pythonPath: 'python'
         nodePath: 'node'

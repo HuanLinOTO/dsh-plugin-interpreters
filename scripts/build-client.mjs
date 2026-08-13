@@ -3,12 +3,12 @@
  * Client bundle build for dsh-interpreters (mirror of dsh-advisor's
  * scripts/build-client.mjs): emits the closure-factory CJS artifact the dsh
  * web loader consumes —
- * `window.__ModuleLoader__.load({ id: '@dsh-external/dsh-interpreters', factory: (require) => {
+ * `window.__ModuleLoader__.load({ id: '@huanlin/dsh-plugin-interpreters', factory: (require) => {
  *   return module.exports; } })`. Externals resolve through the loader module
  * table — the frozen `CLIENT_EXTERNALS` (platform seed entries + the
  * documented `@deepseek-ai/dsh-client-runtime/client` exemption); everything
  * else inlines. The web shell's ClientModuleHostService serves the artifact at
- * `/plugins/@dsh-external/dsh-interpreters/client.js` and executes it as a
+ * `/plugins/@huanlin/dsh-plugin-interpreters/client.js` and executes it as a
  * CLASSIC <script>, so the emitted text must contain NO `import.meta` and no
  * top-level ESM statements (either is a parse-time SyntaxError).
  *
@@ -30,7 +30,7 @@ import { transform } from 'lightningcss'
 import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 
-const ID = '@dsh-external/dsh-interpreters'
+const ID = '@huanlin/dsh-plugin-interpreters'
 const ENTRY = 'src/client/index.ts'
 const OUT_FILE = 'lib/client.js'
 
@@ -44,8 +44,8 @@ const CLIENT_EXTERNALS = [
   '@deepseek-ai/dsh-client-ui-slots',
   '@deepseek-ai/dsh-client-web-react',
   '@deepseek-ai/dsh-client-ui-primitives',
-  '@deepseek-ai/dsh-client-ui-plugin-config',
-  '@deepseek-ai/dsh-client-ui-plugin-config/client',
+  '@deepseek-ai/dsh-client-ui-settings-plugins',
+  '@deepseek-ai/dsh-client-ui-settings-plugins/client',
   '@deepseek-ai/dsh-client-locale',
   '@deepseek-ai/dsh-client-locale/client',
   '@deepseek-ai/dsh-client-connection',

@@ -13,7 +13,7 @@
  * type-only (erased at build) — values arrive via cordis injection
  * (`ctx.get('connection')`, slot inject faces).
  *
- * @module @dsh-external/dsh-interpreters/client
+ * @module @huanlin/dsh-plugin-interpreters/client
  */
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
 import { type InterpretersKey } from './locales.ts';
