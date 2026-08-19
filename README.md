@@ -1,6 +1,6 @@
-[![dshfind](https://dshfind.com/api/badge/huanlinoto/dsh-plugin-interpreters?lang=zh)](https://dshfind.com/zh/plugins/huanlinoto/dsh-plugin-interpreters?ref=badge)
-
-> 📌 本插件已收录于 [dshfind](https://dshfind.com/zh) 插件超市，点击上方徽章直达主页。
+<p align="center">
+  <a href="https://dshfind.com/zh/plugins/huanlinoto/dsh-plugin-interpreters"><img src="https://dshfind.com/api/card/huanlinoto/dsh-plugin-interpreters?lang=zh" alt="dsh-plugin-interpreters card"></a>
+</p>
 
 # dsh-interpreters
 

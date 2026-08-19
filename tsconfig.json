@@ -12,11 +12,19 @@
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@deepseek-ai/cordis": ["C:/Users/Administrator/.dsh/source/current/vendor/cordis/lib/types/index.d.ts"],
       "@deepseek-ai/cosmokit": ["C:/Users/Administrator/.dsh/source/current/vendor/cosmokit/lib/types/index.d.ts"],
       "@deepseek-ai/schemastery": ["C:/Users/Administrator/.dsh/source/current/vendor/schemastery/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-host-webserver": ["C:/Users/Administrator/.dsh/source/current/packages/host/webserver/lib/types/index.d.ts"]
+      "@deepseek-ai/dsh-host-webserver": ["C:/Users/Administrator/.dsh/source/current/packages/host/webserver/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-settings-plugins": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-settings-plugins/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-settings-plugins/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-settings-plugins/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-slots": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-slots/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-runtime/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/runtime/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-connection/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/connection/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-locale/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/locale/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-primitives": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-primitives/lib/types/index.d.ts"]
     }
   },
   "include": ["src"]

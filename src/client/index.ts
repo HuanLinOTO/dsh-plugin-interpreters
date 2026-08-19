@@ -28,7 +28,7 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // purity gate).
 import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
+import { bindSnapshotSelector } from './bindSnapshotSelector.ts'
 import { InterpretersCard } from './InterpretersCard.tsx'
 import { InterpretersCardController, refreshIfLoaded } from './store.ts'
 import { en, NS, zh, type InterpretersKey } from './locales.ts'
@@ -90,8 +90,7 @@ export function apply(ctx: ClientContext): void {
   ctx.slots.inject('settings.plugin.item', function* () {
     yield ctx.slots.register({
       name: 'settings.plugin.item',
-      id: 'dsh-interpreters',
-      order: 50, // bash 0 / agent-loop 10 / web-search 20 / advisor 30 / interpreters 50
+      key: NS,
       locale: NS,
       inject: () => ({ controller, useSnapshot }),
     }, InterpretersCard)

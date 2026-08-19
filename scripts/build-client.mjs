@@ -42,7 +42,6 @@ const CLIENT_EXTERNALS = [
   'react-dom/client',
   '@deepseek-ai/cordis',
   '@deepseek-ai/dsh-client-ui-slots',
-  '@deepseek-ai/dsh-client-web-react',
   '@deepseek-ai/dsh-client-ui-primitives',
   '@deepseek-ai/dsh-client-ui-settings-plugins',
   '@deepseek-ai/dsh-client-ui-settings-plugins/client',
@@ -73,14 +72,11 @@ const result = await build({
   jsx: 'automatic',
   // Externals resolve through the loader module table (the injected require).
   external: [...CLIENT_EXTERNALS],
-  // zustand-style deps read process.env.NODE_ENV and probe import.meta.env.MODE;
-  // the loader executes the bundle as a classic script where a literal
-  // `import.meta` is a SyntaxError. Defining the full `import.meta.env` object
-  // erases every reference.
+  // zustand-style deps read process.env.NODE_ENV; the loader executes the
+  // bundle as a classic script where a literal `import.meta` is a
+  // SyntaxError. Defining process.env.NODE_ENV erases the reference.
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
-    'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV ?? 'production'),
-    'import.meta.env': JSON.stringify({ MODE: process.env.NODE_ENV ?? 'production' }),
   },
   // Closure-factory handoff: `module`/`exports` are declared inside the
   // factory body; the factory returns that surface to the loader.
