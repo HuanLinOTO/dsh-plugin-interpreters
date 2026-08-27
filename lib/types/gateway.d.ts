@@ -20,7 +20,7 @@
  * @module dsh-interpreters/gateway
  */
 import type { Context } from '@deepseek-ai/cordis';
-import type { Settings } from '@deepseek-ai/dsh-settings';
+import type { SettingsProvider } from '@deepseek-ai/dsh-settings';
 import { type Config as ConfigType, type ResolvedConfig } from './config.js';
 import { type InterpretersSettingsBridge } from './settings.js';
 /** Wire view returned by both `get` and `set`: the fully-resolved config. */
@@ -49,7 +49,7 @@ export declare function registerHttpGateway(ctx: Context, bridge: InterpretersSe
  * @returns the new resolved config view.
  * @throws when the settings service is unavailable.
  */
-export declare function handleSet(body: unknown, settings: Settings | undefined, bridge: InterpretersSettingsBridge): Promise<InterpretersConfigView>;
+export declare function handleSet(body: unknown, settings: SettingsProvider | undefined, bridge: InterpretersSettingsBridge): Promise<InterpretersConfigView>;
 /**
  * Extract and validate the patch from the request body.
  *

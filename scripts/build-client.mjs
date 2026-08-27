@@ -5,8 +5,8 @@
  * web loader consumes —
  * `window.__ModuleLoader__.load({ id: '@huanlin/dsh-plugin-interpreters', factory: (require) => {
  *   return module.exports; } })`. Externals resolve through the loader module
- * table — the frozen `CLIENT_EXTERNALS` (platform seed entries + the
- * documented `@deepseek-ai/dsh-client-runtime/client` exemption); everything
+ * table — the frozen `CLIENT_EXTERNALS` (mirror of the web shell's
+ * `PLATFORM_MODULES` seed table); everything
  * else inlines. The web shell's ClientModuleHostService serves the artifact at
  * `/plugins/@huanlin/dsh-plugin-interpreters/client.js` and executes it as a
  * CLASSIC <script>, so the emitted text must contain NO `import.meta` and no
@@ -34,23 +34,16 @@ const ID = '@huanlin/dsh-plugin-interpreters'
 const ENTRY = 'src/client/index.ts'
 const OUT_FILE = 'lib/client.js'
 
-/** Loader module table: platform seed entries plus the documented runtime/client exemption. */
+/** Loader module table: mirror of the web shell's PLATFORM_MODULES seed table. */
 const CLIENT_EXTERNALS = [
   'react',
   'react/jsx-runtime',
   'react-dom',
   'react-dom/client',
   '@deepseek-ai/cordis',
+  '@deepseek-ai/dsh-client-store',
   '@deepseek-ai/dsh-client-ui-slots',
   '@deepseek-ai/dsh-client-ui-primitives',
-  '@deepseek-ai/dsh-client-ui-settings-plugins',
-  '@deepseek-ai/dsh-client-ui-settings-plugins/client',
-  '@deepseek-ai/dsh-client-locale',
-  '@deepseek-ai/dsh-client-locale/client',
-  '@deepseek-ai/dsh-client-connection',
-  '@deepseek-ai/dsh-client-connection/client',
-  '@deepseek-ai/dsh-client-runtime',
-  '@deepseek-ai/dsh-client-runtime/client',
 ]
 
 /** Virtual-id wrapper keeping module CSS away from esbuild's own css pipeline. */

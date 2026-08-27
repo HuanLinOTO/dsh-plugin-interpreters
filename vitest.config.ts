@@ -28,14 +28,13 @@ export default defineConfig({
       ? [
           // The real packages' `./client` entries are browser loader artifacts
           // (`window.__ModuleLoader__.load(...)` — served to the web shell at
-          // runtime); dev-time tests resolve the client half of
-          // dsh-client-runtime to its SOURCE instead. Its value import graph is
-          // node-safe: cross-package imports are type-only, and the value
-          // imports (ui-slots, zustand, immer) resolve from the linked
+          // runtime); dev-time tests resolve the client-store engine (the card
+          // store's value import) to its SOURCE instead. Its value import
+          // graph is node-safe: zustand + immer resolve from the linked
           // packages / the registry.
           {
-            find: '@deepseek-ai/dsh-client-runtime/client',
-            replacement: join(sourceRoot, 'packages', 'client', 'runtime', 'src', 'client', 'index.ts'),
+            find: '@deepseek-ai/dsh-client-store',
+            replacement: join(sourceRoot, 'packages', 'client', 'store', 'src', 'index.ts'),
           },
         ]
       : [],

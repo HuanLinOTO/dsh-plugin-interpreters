@@ -23,7 +23,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type {} from '@deepseek-ai/dsh-host-webserver'
-import type { Settings } from '@deepseek-ai/dsh-settings'
+import type { SettingsProvider } from '@deepseek-ai/dsh-settings'
 import {
   resolveConfig,
   type Config as ConfigType,
@@ -66,7 +66,7 @@ interface ApiEnvelope<T> {
  * @param bridge - the settings bridge the route reads through.
  */
 export function registerHttpGateway(ctx: Context, bridge: InterpretersSettingsBridge): void {
-  let settings: Settings | undefined
+  let settings: SettingsProvider | undefined
   ctx.inject(['settings'], (sctx) => {
     settings = sctx.settings
     return () => { settings = undefined }
@@ -118,7 +118,7 @@ export function registerHttpGateway(ctx: Context, bridge: InterpretersSettingsBr
  */
 export async function handleSet(
   body: unknown,
-  settings: Settings | undefined,
+  settings: SettingsProvider | undefined,
   bridge: InterpretersSettingsBridge,
 ): Promise<InterpretersConfigView> {
   const patch = extractPatch(body)
