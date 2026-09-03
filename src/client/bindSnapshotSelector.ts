@@ -1,7 +1,7 @@
 /**
  * uSES bridge: turns any bare observable snapshot source into a typed
  * selector hook. Inlined from dsh-client-ui-renderer/src/client/bind.ts
- * (shell-only glue; business plugins depend on runtime + ui-slots only).
+ * (shell-only glue; business plugins depend on client-store + ui-slots only).
  *
  * @module dsh-interpreters/client/bindSnapshotSelector
  */

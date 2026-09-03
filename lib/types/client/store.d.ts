@@ -12,7 +12,7 @@
  *
  * @module dsh-interpreters/client/store
  */
-import { type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
+import { type SnapshotStore } from '@deepseek-ai/dsh-client-store';
 /** The persisted shape of the `interpreters` namespace. */
 export interface InterpretersSettings {
     pythonPath?: string;

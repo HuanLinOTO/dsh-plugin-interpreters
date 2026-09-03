@@ -16,12 +16,15 @@
  * @module @huanlin/dsh-plugin-interpreters/client
  */
 
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
 // Type-only: pulls the client connection Context merge (ctx.connection) and
 // the `connection/reset` event type (used for pushed invalidations).
 import type {} from '@deepseek-ai/dsh-client-connection/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
+// Type-only: pulls the ui-renderer's Context merge (ctx.slots, the SlotRegistry
+// the apply body registers through).
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 // Type-only: pulls the `settings.plugin.item` SlotMap entry so this plugin's
 // `slots.inject` matches the section's slot declaration. Cross-plugin
 // collaboration goes through the service, never a value import (client bundle
@@ -90,8 +93,8 @@ export function apply(ctx: ClientContext): void {
   const useSnapshot = bindSnapshotSelector(controller.store)
 
   // Pushed invalidations converge the open surface without polling. The dsh
-  // snapshot removed the `settings/changed` host passthrough from the client
-  // runtime Events vocabulary, so convergence rides `connection/reset` — a
+  // client Events vocabulary has no `settings/changed` host passthrough, so
+  // convergence rides `connection/reset` — a
   // connection reset invalidates the whole client state. A burst of resets
   // coalesces into a single refetch via the microtask debounce, and
   // `refreshIfLoaded` keeps an unopened card idle.

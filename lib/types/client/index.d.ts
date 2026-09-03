@@ -15,7 +15,7 @@
  *
  * @module @huanlin/dsh-plugin-interpreters/client
  */
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
+import type { Context as ClientContext } from '@deepseek-ai/cordis';
 import { type InterpretersKey } from './locales.ts';
 export type { InterpretersCardInjected, InterpretersCardProps } from './InterpretersCard.tsx';
 export type { InterpretersKey } from './locales.ts';
