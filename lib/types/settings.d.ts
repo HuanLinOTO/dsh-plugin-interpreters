@@ -19,7 +19,7 @@
 import type { Context } from '@deepseek-ai/cordis';
 import { type Config as ConfigType } from './config.js';
 /** Settings namespace under which interpreter paths persist. */
-export declare const SETTINGS_NAMESPACE: import("@deepseek-ai/dsh-settings").SettingsNamespace;
+export declare const SETTINGS_NAMESPACE: "interpreters";
 /** Read face the gateway and tool re-registration consume. */
 export interface InterpretersSettingsBridge {
     /** The current resolved config (composition seed while settings is absent). */

@@ -18,11 +18,11 @@
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { settingsNamespace, type SettingsScope } from '@deepseek-ai/dsh-settings'
+import type { SettingsScope } from '@deepseek-ai/dsh-settings'
 import { Config, type Config as ConfigType } from './config.js'
 
 /** Settings namespace under which interpreter paths persist. */
-export const SETTINGS_NAMESPACE = settingsNamespace('interpreters')
+export const SETTINGS_NAMESPACE = 'interpreters' as const
 
 /**
  * Mirror of the dsh-settings internal `isUnloading` guard. The cordis const
