@@ -14,18 +14,20 @@
     "types": ["node"],
     "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@deepseek-ai/cordis": ["C:/Users/Administrator/.dsh/source/current/vendor/cordis/lib/types/index.d.ts"],
-      "@deepseek-ai/cosmokit": ["C:/Users/Administrator/.dsh/source/current/vendor/cosmokit/lib/types/index.d.ts"],
-      "@deepseek-ai/schemastery": ["C:/Users/Administrator/.dsh/source/current/vendor/schemastery/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-host-webserver": ["C:/Users/Administrator/.dsh/source/current/packages/host/webserver/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-client-ui-settings-plugins": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-settings-plugins/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-client-ui-settings-plugins/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-settings-plugins/lib/types/client/index.d.ts"],
-      "@deepseek-ai/dsh-client-ui-slots": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-slots/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-client-store": ["C:/Users/Administrator/.dsh/source/current/packages/client/store/lib/types/index.d.ts"],
-      "@deepseek-ai/dsh-client-ui-renderer/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-renderer/lib/types/client/index.d.ts"],
-      "@deepseek-ai/dsh-client-connection/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/connection/lib/types/client/index.d.ts"],
-      "@deepseek-ai/dsh-client-locale/client": ["C:/Users/Administrator/.dsh/source/current/packages/client/locale/lib/types/client/index.d.ts"],
-      "@deepseek-ai/dsh-client-ui-primitives": ["C:/Users/Administrator/.dsh/source/current/packages/client/ui-primitives/lib/types/index.d.ts"]
+      "@deepseek-ai/cordis": ["D:/Projects/deepseek-harness/dsh/vendor/cordis/lib/types/index.d.ts"],
+      "@deepseek-ai/cosmokit": ["D:/Projects/deepseek-harness/dsh/vendor/cosmokit/lib/types/index.d.ts"],
+      "@deepseek-ai/schemastery": ["D:/Projects/deepseek-harness/dsh/vendor/schemastery/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-host-webserver": ["D:/Projects/deepseek-harness/dsh/packages/host/webserver/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-settings-plugins": ["D:/Projects/deepseek-harness/dsh/packages/client/ui-settings-plugins/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-settings-plugins/client": ["D:/Projects/deepseek-harness/dsh/packages/client/ui-settings-plugins/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-slots": ["D:/Projects/deepseek-harness/dsh/packages/client/ui-slots/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-store": ["D:/Projects/deepseek-harness/dsh/packages/client/store/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-renderer/client": ["D:/Projects/deepseek-harness/dsh/packages/client/ui-renderer/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-connection/client": ["D:/Projects/deepseek-harness/dsh/packages/client/connection/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-locale/client": ["D:/Projects/deepseek-harness/dsh/packages/client/locale/lib/types/client/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-primitives": ["D:/Projects/deepseek-harness/dsh/packages/client/ui-primitives/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-tools": ["D:/Projects/deepseek-harness/dsh/packages/core/tools/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-settings": ["D:/Projects/deepseek-harness/dsh/packages/settings/settings/lib/types/index.d.ts"]
     }
   },
   "include": ["src"]

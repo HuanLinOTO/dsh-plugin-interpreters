@@ -36,6 +36,13 @@ export default defineConfig({
             find: '@deepseek-ai/dsh-client-store',
             replacement: join(sourceRoot, 'packages', 'client', 'store', 'src', 'index.ts'),
           },
+          // Same dev-time strategy for the tool definition engine
+          // (defineTool value import in src/tools.ts); its source value graph
+          // resolves through the dsh workspace's per-package node_modules.
+          {
+            find: '@deepseek-ai/dsh-tools',
+            replacement: join(sourceRoot, 'packages', 'core', 'tools', 'src', 'index.ts'),
+          },
         ]
       : [],
   },
