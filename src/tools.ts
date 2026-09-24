@@ -88,13 +88,21 @@ const outputSchema = {
  * Register `run_python` and `run_node` tools with descriptions that embed
  * the interpreter paths from `cfg`. Returns a disposer that unregisters
  * both tools — call it before re-registering with a fresh config.
+ *
+ * `cfg` may be a thunk: the volatile Cordis config is read at execution time,
+ * so a live interpreter-path edit reaches the next run without a remount. The
+ * model-visible descriptions are built once, from the config at registration.
  */
-export function registerTools(ctx: Context, cfg: ResolvedConfig): () => void {
+export function registerTools(
+  ctx: Context,
+  cfg: ResolvedConfig | (() => ResolvedConfig),
+): () => void {
+  const read: () => ResolvedConfig = typeof cfg === 'function' ? cfg : () => cfg
   const disposers: Array<() => void> = []
 
   disposers.push(ctx.tools.register(defineTool({
     name: 'run_python',
-    description: buildPythonDescription(cfg),
+    description: buildPythonDescription(read()),
     parameters: parametersSchema,
     output: {
       schema: outputSchema,
@@ -102,13 +110,14 @@ export function registerTools(ctx: Context, cfg: ResolvedConfig): () => void {
     },
     execute: async (args: unknown, exec: ToolRunContext): Promise<RunResult> => {
       const a = args as RunCodeArgs
-      return runCode(cfg.pythonPath, a.code, a.cwd, cfg.timeoutMs, exec.signal)
+      const current = read()
+      return runCode(current.pythonPath, a.code, a.cwd, current.timeoutMs, exec.signal)
     },
   })))
 
   disposers.push(ctx.tools.register(defineTool({
     name: 'run_node',
-    description: buildNodeDescription(cfg),
+    description: buildNodeDescription(read()),
     parameters: parametersSchema,
     output: {
       schema: outputSchema,
@@ -116,7 +125,8 @@ export function registerTools(ctx: Context, cfg: ResolvedConfig): () => void {
     },
     execute: async (args: unknown, exec: ToolRunContext): Promise<RunResult> => {
       const a = args as RunCodeArgs
-      return runCode(cfg.nodePath, a.code, a.cwd, cfg.timeoutMs, exec.signal)
+      const current = read()
+      return runCode(current.nodePath, a.code, a.cwd, current.timeoutMs, exec.signal)
     },
   })))
 

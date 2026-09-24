@@ -23,7 +23,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type {} from '@deepseek-ai/dsh-host-webserver'
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings'
+import type {} from '@deepseek-ai/dsh-settings'
 import {
   resolveConfig,
   type Config as ConfigType,
@@ -33,6 +33,11 @@ import {
   SETTINGS_NAMESPACE,
   type InterpretersSettingsBridge,
 } from './settings.js'
+
+/** Minimal writer face of the settings service (`update` merges into the entry config). */
+interface SettingsWriter {
+  update(ns: unknown, patch: object): Promise<void>
+}
 
 /** HTTP route prefix owning every interpreters API request. */
 const API_PREFIX = '/interpreters/api'
@@ -66,9 +71,9 @@ interface ApiEnvelope<T> {
  * @param bridge - the settings bridge the route reads through.
  */
 export function registerHttpGateway(ctx: Context, bridge: InterpretersSettingsBridge): void {
-  let settings: SettingsProvider | undefined
+  let settings: SettingsWriter | undefined
   ctx.inject(['settings'], (sctx) => {
-    settings = sctx.settings
+    settings = sctx.settings as unknown as SettingsWriter
     return () => { settings = undefined }
   })
 
@@ -118,7 +123,7 @@ export function registerHttpGateway(ctx: Context, bridge: InterpretersSettingsBr
  */
 export async function handleSet(
   body: unknown,
-  settings: SettingsProvider | undefined,
+  settings: SettingsWriter | undefined,
   bridge: InterpretersSettingsBridge,
 ): Promise<InterpretersConfigView> {
   const patch = extractPatch(body)

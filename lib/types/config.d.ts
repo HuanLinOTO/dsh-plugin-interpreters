@@ -9,12 +9,23 @@
  *
  * @module dsh-interpreters/config
  */
-import z from 'schemastery';
+import z from '@deepseek-ai/schemastery';
+import type { Volatile } from '@deepseek-ai/cordis';
 /** Composition + user-layer config shape (all fields optional at the boundary). */
 export interface Config {
     pythonPath?: string;
     nodePath?: string;
     timeoutMs?: number;
+}
+/**
+ * Volatile Cordis config the loader passes to `apply`. Each editable field is
+ * a stable reference whose `.get()` returns the latest accepted value; the
+ * profile-owned form enumerates exactly these fields (`.volatile()`).
+ */
+export interface InterpretersEntryConfig {
+    pythonPath: Volatile<string>;
+    nodePath: Volatile<string>;
+    timeoutMs: Volatile<number>;
 }
 /** Fully-resolved config with fallbacks applied; what the tools and gateway serve. */
 export interface ResolvedConfig {
@@ -22,8 +33,8 @@ export interface ResolvedConfig {
     nodePath: string;
     timeoutMs: number;
 }
-/** Schemastery schema for the composition entry and the `interpreters` settings namespace. */
-export declare const Config: z<Config>;
+/** Schemastery schema for the composition entry (live-editable via `.volatile()`). */
+export declare const Config: z<InterpretersEntryConfig>;
 /**
  * Resolve config with fallbacks for missing / invalid values.
  * @param config - raw config from cordis.yml or settings scope.

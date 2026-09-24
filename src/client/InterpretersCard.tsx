@@ -1,5 +1,5 @@
 /**
- * InterpretersCard — the `settings.plugin.item` card for the interpreters
+ * InterpretersCard — the `plugins.row.config` card for the interpreters
  * configuration.
  *
  * Self-drawn chrome replicating the upstream `PluginCard` contract: the
@@ -9,14 +9,15 @@
  * (readOnly notice, form fields, footer with failed/saved message +
  * Discard/Save). Three fields (pythonPath, nodePath, timeoutMs) are staged
  * through the card's controller; save commits them through the
- * `/api/interpreters/set` gateway channel.
+ * `/interpreters/api/set` gateway channel.
  *
  * @module dsh-interpreters/client/InterpretersCard
  */
 
 import { useState, type ReactNode } from 'react'
-import { IconChevronDownOutline14 } from '@deepseek-ai/dsh-client-ui-primitives'
+import { IconChevronDownOutlineMedium } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsLocale, PropsRuntime, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
+import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import {
   InterpretersCardController,
   formatFieldNumber,
@@ -36,23 +37,22 @@ export interface InterpretersCardInjected {
 
 /** Props the renderer binds for the card. */
 export type InterpretersCardProps =
-  PropsRuntime<'settings.plugin.item'>
+  PropsRuntime<'plugins.row.config'>
   & PropsLocale<'interpreters'>
   & InjectFace<InterpretersCardInjected>
 
 /**
- * Render the interpreters card inside the plugin-config section, replicating
- * the upstream PluginCard chrome.
+ * Render the interpreters card on the Plugins page's row-config surface,
+ * replicating the upstream PluginCard chrome.
  * @param props - slot-delivered injected dependencies and the synthesized t seat.
  * @returns the card.
  */
 export function InterpretersCard(props: InterpretersCardProps): ReactNode {
-  const { controller, useSnapshot, t } = props
+  const { view, controller, useSnapshot, t } = props
   const state = useSnapshot(snapshot => snapshot)
 
-  // Load-on-mount: the plugin-config page mounts the card lazily when the
-  // user opens the settings panel, so the first mount triggers the first
-  // gateway load.
+  // Load-on-mount: the plugin page mounts the card lazily when the user opens
+  // the row's configuration, so the first mount triggers the first gateway load.
   if (state.status === 'idle') void controller.load()
 
   // Disclosure is card-local USER state (upstream rationale): the healthy
@@ -60,6 +60,11 @@ export function InterpretersCard(props: InterpretersCardProps): ReactNode {
   // (unavailable) card renders its notice body ALWAYS visible, so `open` is
   // DERIVED from the current snapshot.
   const [userOpen, setUserOpen] = useState(false)
+
+  // The row detail page uses `summary` only when the package description is
+  // absent; render a one-liner there and the interactive form otherwise.
+  if (view === 'summary') return t('intro')
+
   const degraded = state.status === 'ready' && !state.available
   const open = userOpen || degraded
 
@@ -80,7 +85,7 @@ export function InterpretersCard(props: InterpretersCardProps): ReactNode {
         <span className={styles.description}>{t('intro')}</span>
       </span>
       {state.dirty ? <span className={styles.pending}>{t('unsaved')}</span> : null}
-      <IconChevronDownOutline14
+      <IconChevronDownOutlineMedium
         className={open ? `${styles.chevron} ${styles.chevronOpen}` : styles.chevron}
       />
     </button>

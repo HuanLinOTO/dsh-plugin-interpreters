@@ -1,12 +1,12 @@
 /**
  * dsh-interpreters — browser half.
  *
- * Registers the `interpreters` card into the shell-declared
- * `settings.plugin.item` slot (the plugin-config settings page — id
- * `dsh-interpreters`, order 50, after the upstream bash / agent-loop /
- * web-search cards). The card's store reads/writes the `interpreters` config
- * through the host gateway `/api/interpreters/get|set` RPC channel, and keeps
- * fresh on pushed invalidations.
+ * Registers the `interpreters` card into the Plugins-page-declared
+ * `plugins.row.config` slot (key
+ * `@huanlin/dsh-plugin-interpreters#interpreters`). The card's store
+ * reads/writes the `interpreters` config through the host gateway
+ * `/interpreters/api/get|set` RPC channel, and keeps fresh on pushed
+ * invalidations.
  *
  * Export discipline: the client half value-imports ONLY the frozen platform
  * module table (CLIENT_EXTERNALS); every other `@deepseek-ai/*` import is
@@ -25,11 +25,11 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // Type-only: pulls the ui-renderer's Context merge (ctx.slots, the SlotRegistry
 // the apply body registers through).
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
-// Type-only: pulls the `settings.plugin.item` SlotMap entry so this plugin's
-// `slots.inject` matches the section's slot declaration. Cross-plugin
-// collaboration goes through the service, never a value import (client bundle
-// purity gate).
-import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+// Type-only: pulls the `plugins.row.config` SlotMap entry (via the
+// ui-plugin-manager contract) so this plugin's `slots.inject` matches the
+// Plugins page's slot declaration. Cross-plugin collaboration goes through
+// the service, never a value import (client bundle purity gate).
+import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
 import { bindSnapshotSelector } from './bindSnapshotSelector.ts'
 import { InterpretersCard } from './InterpretersCard.tsx'
@@ -54,9 +54,9 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 export const inject = ['slots', 'locale', 'connection']
 
 /**
- * Register the interpreters card once the `settings.plugin.item` declaration
- * is on the ledger, wire its store to the connection, and keep it fresh on
- * every pushed invalidation.
+ * Register the interpreters card once the Plugins page's row-config
+ * declaration is on the ledger, wire its store to the connection, and keep
+ * it fresh on every pushed invalidation.
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
@@ -112,14 +112,15 @@ export function apply(ctx: ClientContext): void {
     return () => { for (const dispose of disposers) dispose() }
   }, 'dsh-interpreters: pushed invalidations')
 
-  // The card registers into the plugin-config page's card slot with the
-  // upstream card shape — generator + `yield`, `locale: NS`, and an inject
-  // face carrying ONLY the business surface (controller + useSnapshot). The
+  // The card registers into the Plugins page's row-config slot, keyed by
+  // `<bundle package>#<row id>` (the bundle's patch declares row
+  // `interpreters`). The rc.2 plugin-config slot is retired in rc.1. The inject
+  // face carries ONLY the business surface (controller + useSnapshot); the
   // typed `t` seat is synthesized by the renderer from `locale: NS`.
-  ctx.slots.inject('settings.plugin.item', function* () {
+  ctx.slots.inject('plugins.row.config', function* () {
     yield ctx.slots.register({
-      name: 'settings.plugin.item',
-      key: NS,
+      name: 'plugins.row.config',
+      key: '@huanlin/dsh-plugin-interpreters#interpreters',
       locale: NS,
       inject: () => ({ controller, useSnapshot }),
     }, InterpretersCard)

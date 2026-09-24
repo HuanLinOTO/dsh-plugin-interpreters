@@ -1,12 +1,12 @@
 /**
  * dsh-interpreters — browser half.
  *
- * Registers the `interpreters` card into the shell-declared
- * `settings.plugin.item` slot (the plugin-config settings page — id
- * `dsh-interpreters`, order 50, after the upstream bash / agent-loop /
- * web-search cards). The card's store reads/writes the `interpreters` config
- * through the host gateway `/api/interpreters/get|set` RPC channel, and keeps
- * fresh on pushed invalidations.
+ * Registers the `interpreters` card into the Plugins-page-declared
+ * `plugins.row.config` slot (key
+ * `@huanlin/dsh-plugin-interpreters#interpreters`). The card's store
+ * reads/writes the `interpreters` config through the host gateway
+ * `/interpreters/api/get|set` RPC channel, and keeps fresh on pushed
+ * invalidations.
  *
  * Export discipline: the client half value-imports ONLY the frozen platform
  * module table (CLIENT_EXTERNALS); every other `@deepseek-ai/*` import is
@@ -31,9 +31,9 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
  *  NOT constrained; registration depends on the slot through `slots.inject()`. */
 export declare const inject: string[];
 /**
- * Register the interpreters card once the `settings.plugin.item` declaration
- * is on the ledger, wire its store to the connection, and keep it fresh on
- * every pushed invalidation.
+ * Register the interpreters card once the Plugins page's row-config
+ * declaration is on the ledger, wire its store to the connection, and keep
+ * it fresh on every pushed invalidation.
  * @param ctx - client root context.
  */
 export declare function apply(ctx: ClientContext): void;

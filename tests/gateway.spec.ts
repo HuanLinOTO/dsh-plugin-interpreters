@@ -15,13 +15,12 @@
 import { describe, it, expect, vi } from 'vitest'
 import { extractPatch, handleSet } from '../src/gateway.ts'
 import type { InterpretersSettingsBridge } from '../src/settings.ts'
-import type { Config } from '../src/config.ts'
+import type { ResolvedConfig } from '../src/config.ts'
 
 /** Build a mock bridge with a controllable source. */
-function bridgeOf(source: Config): InterpretersSettingsBridge {
+function bridgeOf(source: ResolvedConfig): InterpretersSettingsBridge {
   return {
     source: () => source,
-    onChange: () => {},
   }
 }
 
@@ -72,7 +71,7 @@ describe('extractPatch', () => {
 
 describe('handleSet', () => {
   it('throws when the settings service is unavailable', async () => {
-    const bridge = bridgeOf({})
+    const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     await expect(handleSet({ patch: { pythonPath: '/x' } }, undefined, bridge))
       .rejects.toThrow('settings service is unavailable')
   })
@@ -80,19 +79,19 @@ describe('handleSet', () => {
   it('returns current config without writing when patch is empty', async () => {
     const update = vi.fn(async () => {})
     const settings = settingsWith(update)
-    const bridge = bridgeOf({ pythonPath: 'python' })
+    const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     const result = await handleSet({ patch: {} }, settings as never, bridge)
     expect(update).not.toHaveBeenCalled()
     expect(result.config.pythonPath).toBe('python')
   })
 
   it('writes a valid patch and returns the updated config', async () => {
-    let source: Config = { pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 }
+    let source: ResolvedConfig = { pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 }
     const update = vi.fn(async (_ns: string, patch: Record<string, unknown>) => {
       source = { ...source, ...patch }
     })
     const settings = settingsWith(update)
-    const bridge: InterpretersSettingsBridge = { source: () => source, onChange: () => {} }
+    const bridge: InterpretersSettingsBridge = { source: () => source }
     const result = await handleSet({ patch: { pythonPath: '/opt/python3.12', timeoutMs: 5000 } }, settings as never, bridge)
     expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/opt/python3.12', timeoutMs: 5000 })
     expect(result.config.pythonPath).toBe('/opt/python3.12')
@@ -102,7 +101,7 @@ describe('handleSet', () => {
   it('filters unknown keys before writing', async () => {
     const update = vi.fn(async () => {})
     const settings = settingsWith(update)
-    const bridge = bridgeOf({})
+    const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     await handleSet({ patch: { pythonPath: '/x', unknownField: 'malicious' } }, settings as never, bridge)
     expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/x' })
   })
@@ -110,7 +109,7 @@ describe('handleSet', () => {
   it('returns current config without writing when all fields are filtered out', async () => {
     const update = vi.fn(async () => {})
     const settings = settingsWith(update)
-    const bridge = bridgeOf({ pythonPath: 'python' })
+    const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     const result = await handleSet({ patch: { unknownField: 'x' } }, settings as never, bridge)
     expect(update).not.toHaveBeenCalled()
     expect(result.config.pythonPath).toBe('python')
@@ -119,7 +118,7 @@ describe('handleSet', () => {
   it('returns current config without writing when patch contains only mistyped values', async () => {
     const update = vi.fn(async () => {})
     const settings = settingsWith(update)
-    const bridge = bridgeOf({})
+    const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     await handleSet({ patch: { pythonPath: 123, timeoutMs: 'bad' } }, settings as never, bridge)
     expect(update).not.toHaveBeenCalled()
   })

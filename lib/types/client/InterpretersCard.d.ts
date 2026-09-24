@@ -1,5 +1,5 @@
 /**
- * InterpretersCard — the `settings.plugin.item` card for the interpreters
+ * InterpretersCard — the `plugins.row.config` card for the interpreters
  * configuration.
  *
  * Self-drawn chrome replicating the upstream `PluginCard` contract: the
@@ -9,7 +9,7 @@
  * (readOnly notice, form fields, footer with failed/saved message +
  * Discard/Save). Three fields (pythonPath, nodePath, timeoutMs) are staged
  * through the card's controller; save commits them through the
- * `/api/interpreters/set` gateway channel.
+ * `/interpreters/api/set` gateway channel.
  *
  * @module dsh-interpreters/client/InterpretersCard
  */
@@ -25,10 +25,10 @@ export interface InterpretersCardInjected {
     useSnapshot: SnapshotSelectorHook<InterpretersCardState>;
 }
 /** Props the renderer binds for the card. */
-export type InterpretersCardProps = PropsRuntime<'settings.plugin.item'> & PropsLocale<'interpreters'> & InjectFace<InterpretersCardInjected>;
+export type InterpretersCardProps = PropsRuntime<'plugins.row.config'> & PropsLocale<'interpreters'> & InjectFace<InterpretersCardInjected>;
 /**
- * Render the interpreters card inside the plugin-config section, replicating
- * the upstream PluginCard chrome.
+ * Render the interpreters card on the Plugins page's row-config surface,
+ * replicating the upstream PluginCard chrome.
  * @param props - slot-delivered injected dependencies and the synthesized t seat.
  * @returns the card.
  */

@@ -1,6 +1,6 @@
 {
   "name": "@huanlin/dsh-plugin-interpreters",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "publishConfig": {
     "access": "public"
   },
@@ -35,8 +35,8 @@
       "inject": [
         "@deepseek-ai/dsh-client-locale",
         "@deepseek-ai/dsh-client-connection",
-        "@deepseek-ai/dsh-client-ui-renderer",
-        "@deepseek-ai/dsh-client-ui-settings-plugins"
+        "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-client-ui-renderer"
       ],
       "platform": "web"
     }
@@ -49,18 +49,18 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-client-connection": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-locale": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-store": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-ui-primitives": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-ui-renderer": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-ui-settings-plugins": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-client-ui-slots": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-host-webserver": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-settings": "^0.1.5-rc.1",
-    "@deepseek-ai/dsh-tools": "^0.1.5-rc.1",
-    "react": "^18.2.0",
-    "schemastery": "^3.18.0"
+    "@deepseek-ai/dsh-client-connection": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-locale": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-store": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-ui-plugin-manager": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-ui-primitives": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-ui-renderer": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-client-ui-slots": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-host-webserver": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-settings": "^0.1.7-rc.1",
+    "@deepseek-ai/dsh-tools": "^0.1.7-rc.1",
+    "@deepseek-ai/schemastery": "^3.18.4",
+    "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -75,13 +75,13 @@
     "@deepseek-ai/dsh-client-store": {
       "optional": true
     },
-    "@deepseek-ai/dsh-client-ui-renderer": {
-      "optional": true
-    },
-    "@deepseek-ai/dsh-client-ui-settings-plugins": {
+    "@deepseek-ai/dsh-client-ui-plugin-manager": {
       "optional": true
     },
     "@deepseek-ai/dsh-client-ui-primitives": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-ui-renderer": {
       "optional": true
     },
     "@deepseek-ai/dsh-client-ui-slots": {
@@ -96,10 +96,10 @@
     "@deepseek-ai/dsh-tools": {
       "optional": true
     },
-    "react": {
+    "@deepseek-ai/schemastery": {
       "optional": true
     },
-    "schemastery": {
+    "react": {
       "optional": true
     }
   },
@@ -110,11 +110,11 @@
     "@deepseek-ai/dsh-client-ui-slots": "link:D:/Projects/deepseek-harness/dsh/packages/client/ui-slots",
     "@deepseek-ai/dsh-settings": "link:D:/Projects/deepseek-harness/dsh/packages/settings/settings",
     "@deepseek-ai/dsh-tools": "link:D:/Projects/deepseek-harness/dsh/packages/core/tools",
+    "@deepseek-ai/schemastery": "^3.18.4",
     "@types/node": "^22.20.0",
     "@types/react": "~18.3.1",
     "esbuild": "^0.28.2",
     "lightningcss": "^1.29.2",
-    "schemastery": "^3.18.0",
     "tsdown": "^0.22.2",
     "typescript": "^5.9.0",
     "use-sync-external-store": "^1.2.0",

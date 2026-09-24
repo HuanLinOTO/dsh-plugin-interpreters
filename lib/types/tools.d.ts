@@ -37,5 +37,9 @@ export declare function renderRunCodeOutput(value: RunResult): string;
  * Register `run_python` and `run_node` tools with descriptions that embed
  * the interpreter paths from `cfg`. Returns a disposer that unregisters
  * both tools — call it before re-registering with a fresh config.
+ *
+ * `cfg` may be a thunk: the volatile Cordis config is read at execution time,
+ * so a live interpreter-path edit reaches the next run without a remount. The
+ * model-visible descriptions are built once, from the config at registration.
  */
-export declare function registerTools(ctx: Context, cfg: ResolvedConfig): () => void;
+export declare function registerTools(ctx: Context, cfg: ResolvedConfig | (() => ResolvedConfig)): () => void;

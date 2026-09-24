@@ -26,17 +26,21 @@
  * @module @huanlin/dsh-plugin-interpreters
  */
 import type { Context } from '@deepseek-ai/cordis';
-import { type Config } from './config.js';
-export { Config, resolveConfig, type ResolvedConfig } from './config.js';
+import { type InterpretersEntryConfig } from './config.js';
+export { Config, resolveConfig, type Config as InterpretersConfig, type ResolvedConfig } from './config.js';
 export { registerHttpGateway, type InterpretersConfigPatch, type InterpretersConfigView } from './gateway.js';
 export { SETTINGS_NAMESPACE, type InterpretersSettingsBridge } from './settings.js';
 export declare const name = "dsh-interpreters";
 export declare const inject: string[];
 /**
- * Plugin body: register tools with the composition config, then swap to
- * settings-resolved config when the settings service mounts, and expose the
+ * Plugin body: register the tools against the live config, then expose the
  * config through a `/interpreters/api/get|set` HTTP route.
+ *
+ * The tools are registered once, reading the entry's volatile config at
+ * execution time, so a live path edit reaches the next run without a remount.
+ * `Write` edits go through `ctx.settings.update(entryId, patch)`, persisting in
+ * the active profile's `cordis.patch.yml`.
  * @param ctx - host context carrying `tools` and `webServer`.
- * @param config - resolved composition config (seed).
+ * @param config - the entry's volatile Cordis config.
  */
-export declare function apply(ctx: Context, config?: Config): void;
+export declare function apply(ctx: Context, config?: InterpretersEntryConfig): void;

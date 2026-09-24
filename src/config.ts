@@ -10,13 +10,25 @@
  * @module dsh-interpreters/config
  */
 
-import z from 'schemastery'
+import z from '@deepseek-ai/schemastery'
+import type { Volatile } from '@deepseek-ai/cordis'
 
 /** Composition + user-layer config shape (all fields optional at the boundary). */
 export interface Config {
   pythonPath?: string
   nodePath?: string
   timeoutMs?: number
+}
+
+/**
+ * Volatile Cordis config the loader passes to `apply`. Each editable field is
+ * a stable reference whose `.get()` returns the latest accepted value; the
+ * profile-owned form enumerates exactly these fields (`.volatile()`).
+ */
+export interface InterpretersEntryConfig {
+  pythonPath: Volatile<string>
+  nodePath: Volatile<string>
+  timeoutMs: Volatile<number>
 }
 
 /** Fully-resolved config with fallbacks applied; what the tools and gateway serve. */
@@ -26,12 +38,12 @@ export interface ResolvedConfig {
   timeoutMs: number
 }
 
-/** Schemastery schema for the composition entry and the `interpreters` settings namespace. */
+/** Schemastery schema for the composition entry (live-editable via `.volatile()`). */
 export const Config = z.object({
-  pythonPath: z.string().default('python').description('Path to the Python interpreter executable.'),
-  nodePath: z.string().default('node').description('Path to the Node.js interpreter executable.'),
-  timeoutMs: z.number().default(30000).description('Maximum execution time in milliseconds before the process is killed.'),
-}) as unknown as z<Config>
+  pythonPath: z.string().default('python').description('Path to the Python interpreter executable.').volatile(),
+  nodePath: z.string().default('node').description('Path to the Node.js interpreter executable.').volatile(),
+  timeoutMs: z.number().default(30000).description('Maximum execution time in milliseconds before the process is killed.').volatile(),
+}) as unknown as z<InterpretersEntryConfig>
 
 /**
  * Resolve config with fallbacks for missing / invalid values.

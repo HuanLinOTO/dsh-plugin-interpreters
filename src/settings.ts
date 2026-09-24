@@ -1,93 +1,54 @@
 /**
- * settings.ts — host-side bridge between the `interpreters` settings namespace
- * and the plugin's other halves (tool registration + RPC gateway).
+ * settings.ts — host-side bridge between the `interpreters` config and the
+ * plugin's other halves (tool registration + RPC gateway).
  *
- * The composition `Config` (cordis.patch.yml) is the first-boot seed; once the
- * `ctx.settings` service mounts, the user-editable layer takes over and live
- * re-registration follows every committed change. Headless assemblies without
- * a settings provider fall back to the composition config (no persistence, no
- * live reload).
+ * dsh 0.1.7-rc.1 moved plugin configuration into the profile-owned Cordis
+ * `Config`: the fields are marked `.volatile()` (see `config.ts`), so the
+ * loader commits live references without remounting. The namespace-registration API
+ * is gone; a plugin only declares the presentation policy for its own page.
  *
- * The bridge pattern mirrors `dsh-advisor/src/settings.ts`: a `source()` thunk
- * the gateway reads in-process, plus an `onChange()` subscription the host
- * entry uses to re-register the tools. This avoids any wire-layer allowlist
- * (the DSH settings RPC domain only serves a fixed namespace set to browser
- * configuration clients; the gateway bypasses it through `/api`).
+ * The bridge exposes a `source()` thunk the gateway and tool registration read
+ * in-process. Each call reads the current volatile reference, so the tool's
+ * execution and the gateway always see the latest accepted value. The value
+ * persists in the active profile's `cordis.patch.yml` under the entry's
+ * `config` (the entry id is the composition row id declared in
+ * `cordis.patch.yml`).
  *
  * @module dsh-interpreters/settings
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { SettingsScope } from '@deepseek-ai/dsh-settings'
-import { Config, type Config as ConfigType } from './config.js'
+import type {} from '@deepseek-ai/dsh-settings'
+import { resolveConfig, type InterpretersEntryConfig, type ResolvedConfig } from './config.js'
 
-/** Settings namespace under which interpreter paths persist. */
+/** The composition row id: the settings namespace / profile entry id. */
 export const SETTINGS_NAMESPACE = 'interpreters' as const
-
-/**
- * Mirror of the dsh-settings internal `isUnloading` guard. The cordis const
- * enum for fiber state is erased at compile time, so the literal states are
- * matched numerically: 4 = DISPOSED, 5 = UNLOADING.
- */
-function isUnloading(ctx: Context): boolean {
-  const state = (ctx as unknown as { fiber?: { state?: number } }).fiber?.state
-  return state === 4 || state === 5
-}
 
 /** Read face the gateway and tool re-registration consume. */
 export interface InterpretersSettingsBridge {
-  /** The current resolved config (composition seed while settings is absent). */
-  source(): ConfigType
-  /** Observe committed changes to the resolved config. */
-  onChange(callback: () => void): void
+  /** The current resolved config from the entry's volatile references. */
+  source(): ResolvedConfig
 }
 
 /**
- * Install the `interpreters` settings namespace and return the bridge.
+ * Declare the plugin's settings presentation policy and return the bridge.
  *
- * The settings service is reached through `ctx.inject(['settings'], ...)` so a
- * composition without a settings provider still loads the plugin (entry-source
- * fallback, no persistence). Multi-fiber dedupe is handled by catching the
- * `"already registered"` rejection — host composition may mount several
- * concurrent fibers of this plugin, and only the first registration owns the
- * namespace.
+ * `auto: false` suppresses a schema-generated page: this plugin ships its own
+ * form through the `plugins.row.config` slot on the Plugins page.
  * @param ctx - host context.
- * @param entry - composition-layer config (cordis.patch.yml seed).
- * @returns the bridge the gateway and tool re-registration consume.
+ * @param config - the entry's volatile Cordis config.
+ * @returns the bridge the gateway and tool registration consume.
  */
-export function installInterpretersSettings(ctx: Context, entry: ConfigType): InterpretersSettingsBridge {
-  const listeners = new Set<() => void>()
-  let source = (): ConfigType => entry
-  const notify = (): void => {
-    for (const listener of [...listeners]) listener()
-  }
-
+export function installInterpretersSettings(ctx: Context, config: InterpretersEntryConfig): InterpretersSettingsBridge {
   ctx.inject(['settings'], (sctx) => {
-    let scope: SettingsScope<ConfigType> | undefined
-    try {
-      scope = sctx.settings.register(SETTINGS_NAMESPACE, Config, { base: entry as never })
-    } catch (error) {
-      // Multi-fiber dedupe: the first registration owns the namespace; later
-      // fibers stay on the entry source and emit no notifications of their own.
-      if (!(error instanceof Error) || !error.message.includes('already registered')) throw error
-      ctx.logger('dsh-interpreters').debug('settings namespace already registered — entry-source fallback')
-      return
-    }
-    source = () => scope!.get()
-    sctx.effect(() => () => {
-      if (isUnloading(ctx)) return
-      source = () => entry
-      notify()
-    })
-    notify()
-    scope.watch(() => {
-      if (isUnloading(ctx)) return
-      notify()
-    })
+    sctx.effect(() => sctx.settings.configure({ auto: false }, ctx.fiber))
   })
 
   return {
-    source: () => source(),
-    onChange: (cb) => { listeners.add(cb) },
+    source: () => resolveConfig({
+      pythonPath: config.pythonPath.get(),
+      nodePath: config.nodePath.get(),
+      timeoutMs: config.timeoutMs.get(),
+    }),
   }
 }
