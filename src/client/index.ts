@@ -3,7 +3,7 @@
  *
  * Registers the `interpreters` card into the Plugins-page-declared
  * `plugins.row.config` slot (key
- * `@huanlin/dsh-plugin-interpreters#interpreters`). The card's store
+ * `@huanlin/dsh-plugin-interpreters#dsh-interpreters`). The card's store
  * reads/writes the `interpreters` config through the host gateway
  * `/interpreters/api/get|set` RPC channel, and keeps fresh on pushed
  * invalidations.
@@ -47,6 +47,18 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     'interpreters': InterpretersKey
   }
 }
+
+/**
+ * Composition row id: the `id` of the row in `cordis.patch.yml`, identical to
+ * the host half's plugin `name` (`src/index.ts` exports
+ * `name = 'dsh-interpreters'`) — the Plugins page keys a row's configuration
+ * by exactly this id (`rowConfigKey(bundle, rowId)`), so the key below and
+ * the patch row id must stay derived from this one constant.
+ */
+const ENTRY_ID = 'dsh-interpreters'
+
+/** `plugins.row.config` key: the bundle's package name `#` the row id. */
+const ROW_KEY = `@huanlin/dsh-plugin-interpreters#${ENTRY_ID}`
 
 /** Required services (cordis fiber inject). The target slot is declared by
  *  ui-plugin-config's apply, whose activation order relative to this one is
@@ -114,13 +126,14 @@ export function apply(ctx: ClientContext): void {
 
   // The card registers into the Plugins page's row-config slot, keyed by
   // `<bundle package>#<row id>` (the bundle's patch declares row
-  // `interpreters`). The rc.2 plugin-config slot is retired in rc.1. The inject
-  // face carries ONLY the business surface (controller + useSnapshot); the
-  // typed `t` seat is synthesized by the renderer from `locale: NS`.
+  // `dsh-interpreters` — ENTRY_ID, same as the host `name`). The rc.2
+  // plugin-config slot is retired in rc.1. The inject face carries ONLY the
+  // business surface (controller + useSnapshot); the typed `t` seat is
+  // synthesized by the renderer from `locale: NS`.
   ctx.slots.inject('plugins.row.config', function* () {
     yield ctx.slots.register({
       name: 'plugins.row.config',
-      key: '@huanlin/dsh-plugin-interpreters#interpreters',
+      key: ROW_KEY,
       locale: NS,
       inject: () => ({ controller, useSnapshot }),
     }, InterpretersCard)

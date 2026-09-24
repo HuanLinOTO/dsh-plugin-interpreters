@@ -2,18 +2,19 @@
  * InterpretersCard — the `plugins.row.config` card for the interpreters
  * configuration.
  *
- * Self-drawn chrome replicating the upstream `PluginCard` contract: the
- * upstream client value face exports no reusable card component, so this
- * card draws its own collapsible `<li>` with the same header button (name
- * over description, dirty pill, rotating chevron, aria) and divided body
- * (readOnly notice, form fields, footer with failed/saved message +
- * Discard/Save). Three fields (pythonPath, nodePath, timeoutMs) are staged
- * through the card's controller; save commits them through the
- * `/interpreters/api/set` gateway channel.
+ * Since 0.1.7 the contribution renders on the plugin's dedicated row detail
+ * page, where the page draws its own title, icon, and breadcrumb and this
+ * card is the page's only content — so the card is a flat always-open
+ * surface with no card-level disclosure header (that fold-unfold chrome
+ * was a shared-card-era artifact from when several plugins' cards stacked
+ * in one settings tab). The three fields (pythonPath, nodePath, timeoutMs)
+ * are staged through the card's controller; save commits them through the
+ * `/interpreters/api/set` gateway channel, and the degraded (unavailable)
+ * notice renders in place of the form, always visible.
  *
  * @module dsh-interpreters/client/InterpretersCard
  */
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { InjectFace, PropsLocale, PropsRuntime, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots';
 import { InterpretersCardController, type InterpretersCardState } from './store.ts';
 import type { InterpretersKey } from './locales.ts';
@@ -27,8 +28,9 @@ export interface InterpretersCardInjected {
 /** Props the renderer binds for the card. */
 export type InterpretersCardProps = PropsRuntime<'plugins.row.config'> & PropsLocale<'interpreters'> & InjectFace<InterpretersCardInjected>;
 /**
- * Render the interpreters card on the Plugins page's row-config surface,
- * replicating the upstream PluginCard chrome.
+ * Render the interpreters settings flat on the plugin's dedicated row detail
+ * page: the page owns the title, icon, and breadcrumb; this card draws only
+ * the always-open form (or the degraded notice).
  * @param props - slot-delivered injected dependencies and the synthesized t seat.
  * @returns the card.
  */

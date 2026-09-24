@@ -3,7 +3,7 @@
  *
  * Registers the `interpreters` card into the Plugins-page-declared
  * `plugins.row.config` slot (key
- * `@huanlin/dsh-plugin-interpreters#interpreters`). The card's store
+ * `@huanlin/dsh-plugin-interpreters#dsh-interpreters`). The card's store
  * reads/writes the `interpreters` config through the host gateway
  * `/interpreters/api/get|set` RPC channel, and keeps fresh on pushed
  * invalidations.

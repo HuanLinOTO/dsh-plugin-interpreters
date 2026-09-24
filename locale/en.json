@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Interpreters",
+    "description": "Exposes run_python and run_node tools that execute code via stdin; Python and Node.js interpreter paths are configurable from the settings card."
+  }
+}

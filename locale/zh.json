@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "解释器",
+    "description": "提供 run_python / run_node 模型工具（代码经 stdin 执行并返回 stdout/stderr/退出码），Python 与 Node.js 解释器路径可在设置页配置卡片中修改。"
+  }
+}

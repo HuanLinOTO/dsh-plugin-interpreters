@@ -2,20 +2,20 @@
  * InterpretersCard — the `plugins.row.config` card for the interpreters
  * configuration.
  *
- * Self-drawn chrome replicating the upstream `PluginCard` contract: the
- * upstream client value face exports no reusable card component, so this
- * card draws its own collapsible `<li>` with the same header button (name
- * over description, dirty pill, rotating chevron, aria) and divided body
- * (readOnly notice, form fields, footer with failed/saved message +
- * Discard/Save). Three fields (pythonPath, nodePath, timeoutMs) are staged
- * through the card's controller; save commits them through the
- * `/interpreters/api/set` gateway channel.
+ * Since 0.1.7 the contribution renders on the plugin's dedicated row detail
+ * page, where the page draws its own title, icon, and breadcrumb and this
+ * card is the page's only content — so the card is a flat always-open
+ * surface with no card-level disclosure header (that fold-unfold chrome
+ * was a shared-card-era artifact from when several plugins' cards stacked
+ * in one settings tab). The three fields (pythonPath, nodePath, timeoutMs)
+ * are staged through the card's controller; save commits them through the
+ * `/interpreters/api/set` gateway channel, and the degraded (unavailable)
+ * notice renders in place of the form, always visible.
  *
  * @module dsh-interpreters/client/InterpretersCard
  */
 
-import { useState, type ReactNode } from 'react'
-import { IconChevronDownOutlineMedium } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { ReactNode } from 'react'
 import type { InjectFace, PropsLocale, PropsRuntime, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import {
@@ -42,8 +42,9 @@ export type InterpretersCardProps =
   & InjectFace<InterpretersCardInjected>
 
 /**
- * Render the interpreters card on the Plugins page's row-config surface,
- * replicating the upstream PluginCard chrome.
+ * Render the interpreters settings flat on the plugin's dedicated row detail
+ * page: the page owns the title, icon, and breadcrumb; this card draws only
+ * the always-open form (or the degraded notice).
  * @param props - slot-delivered injected dependencies and the synthesized t seat.
  * @returns the card.
  */
@@ -55,41 +56,11 @@ export function InterpretersCard(props: InterpretersCardProps): ReactNode {
   // the row's configuration, so the first mount triggers the first gateway load.
   if (state.status === 'idle') void controller.load()
 
-  // Disclosure is card-local USER state (upstream rationale): the healthy
-  // card starts collapsed and opens on the header click only. The degraded
-  // (unavailable) card renders its notice body ALWAYS visible, so `open` is
-  // DERIVED from the current snapshot.
-  const [userOpen, setUserOpen] = useState(false)
-
   // The row detail page uses `summary` only when the package description is
   // absent; render a one-liner there and the interactive form otherwise.
   if (view === 'summary') return t('intro')
 
   const degraded = state.status === 'ready' && !state.available
-  const open = userOpen || degraded
-
-  const title = t('title')
-  const header = (
-    <button
-      type="button"
-      className={styles.header}
-      aria-expanded={open}
-      aria-label={`${t(open ? 'collapse' : 'expand')}: ${title}`}
-      // While degraded the derived open is forced true, so the click must be
-      // a no-op — toggling userOpen would silently latch it and pre-open the
-      // recovered form.
-      onClick={() => { if (!degraded) setUserOpen(!userOpen) }}
-    >
-      <span className={styles.headText}>
-        <span className={styles.name}>{title}</span>
-        <span className={styles.description}>{t('intro')}</span>
-      </span>
-      {state.dirty ? <span className={styles.pending}>{t('unsaved')}</span> : null}
-      <IconChevronDownOutlineMedium
-        className={open ? `${styles.chevron} ${styles.chevronOpen}` : styles.chevron}
-      />
-    </button>
-  )
 
   let body: ReactNode
   if (degraded) {
@@ -169,17 +140,12 @@ export function InterpretersCard(props: InterpretersCardProps): ReactNode {
       </div>
     )
   } else {
-    // Loading (or the idle→loading transition): the header alone — an open
-    // card shows an empty body.
+    // Loading (or the idle→loading transition): keep the box mounted so the
+    // page does not reflow when the fields arrive.
     body = <div className={styles.body} />
   }
 
-  return (
-    <li className={open ? `${styles.card} ${styles.cardOpen}` : styles.card}>
-      {header}
-      {open ? body : null}
-    </li>
-  )
+  return <section className={styles.card}>{body}</section>
 }
 
 /** One staged field control (text or numeric). */

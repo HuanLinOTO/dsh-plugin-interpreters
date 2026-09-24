@@ -1,6 +1,6 @@
 {
   "name": "@huanlin/dsh-plugin-interpreters",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "publishConfig": {
     "access": "public"
   },
@@ -21,10 +21,12 @@
       "types": "./lib/types/client/index.d.ts",
       "default": "./lib/client.js"
     },
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "files": [
     "lib/",
+    "locale/",
     "cordis.patch.yml"
   ],
   "dsh": {
