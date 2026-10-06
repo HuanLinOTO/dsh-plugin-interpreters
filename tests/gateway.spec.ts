@@ -93,7 +93,7 @@ describe('handleSet', () => {
     const settings = settingsWith(update)
     const bridge: InterpretersSettingsBridge = { source: () => source }
     const result = await handleSet({ patch: { pythonPath: '/opt/python3.12', timeoutMs: 5000 } }, settings as never, bridge)
-    expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/opt/python3.12', timeoutMs: 5000 })
+    expect(update).toHaveBeenCalledWith('dsh-interpreters', { pythonPath: '/opt/python3.12', timeoutMs: 5000 })
     expect(result.config.pythonPath).toBe('/opt/python3.12')
     expect(result.config.timeoutMs).toBe(5000)
   })
@@ -103,7 +103,7 @@ describe('handleSet', () => {
     const settings = settingsWith(update)
     const bridge = bridgeOf({ pythonPath: 'python', nodePath: 'node', timeoutMs: 30000 })
     await handleSet({ patch: { pythonPath: '/x', unknownField: 'malicious' } }, settings as never, bridge)
-    expect(update).toHaveBeenCalledWith('interpreters', { pythonPath: '/x' })
+    expect(update).toHaveBeenCalledWith('dsh-interpreters', { pythonPath: '/x' })
   })
 
   it('returns current config without writing when all fields are filtered out', async () => {
