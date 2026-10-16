@@ -1,6 +1,6 @@
 {
   "name": "@huanlin/dsh-plugin-interpreters",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publishConfig": {
     "access": "public"
   },
@@ -50,18 +50,18 @@
     "build": "tsc -p tsconfig.build.json && node scripts/build-client.mjs && tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-client-connection": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-locale": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-store": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-ui-plugin-manager": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-ui-primitives": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-ui-renderer": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-client-ui-slots": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-host-webserver": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-settings": "^0.2.0-rc.1",
-    "@deepseek-ai/dsh-tools": "^0.2.0-rc.1",
-    "@deepseek-ai/schemastery": "^3.18.4",
+    "@deepseek-ai/cordis": "~4.0.5-alpha.2",
+    "@deepseek-ai/dsh-client-connection": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-locale": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-store": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-ui-plugin-manager": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-ui-primitives": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-ui-renderer": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-client-ui-slots": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-host-webserver": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-settings": "^0.2.1-alpha.5",
+    "@deepseek-ai/dsh-tools": "^0.2.1-alpha.5",
+    "@deepseek-ai/schemastery": "~3.18.5-alpha.2",
     "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
@@ -112,7 +112,7 @@
     "@deepseek-ai/dsh-client-ui-slots": "link:D:/Projects/deepseek-harness/dsh/packages/client/ui-slots",
     "@deepseek-ai/dsh-settings": "link:D:/Projects/deepseek-harness/dsh/packages/settings/settings",
     "@deepseek-ai/dsh-tools": "link:D:/Projects/deepseek-harness/dsh/packages/core/tools",
-    "@deepseek-ai/schemastery": "^3.18.4",
+    "@deepseek-ai/schemastery": "link:D:/Projects/deepseek-harness/dsh/vendor/schemastery",
     "@types/node": "^22.20.0",
     "@types/react": "~18.3.1",
     "esbuild": "^0.28.2",

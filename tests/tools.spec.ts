@@ -10,7 +10,7 @@
  *   - registerTools: registers two tools, disposer unregisters them
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { resolveConfig, type Config } from '../src/config.ts'
 import {
   buildPythonDescription,
@@ -91,7 +91,7 @@ describe('runCode', () => {
     const result = await runCode('node', 'this is not valid javascript!!!', undefined, 10000, controller.signal)
     expect(result.ok).toBe(false)
     expect(result.exit_code).not.toBe(0)
-    expect(result.stderr).length > 0
+    expect(result.stderr.length).toBeGreaterThan(0)
   })
 
   it('kills the process on timeout', async () => {
@@ -123,7 +123,7 @@ describe('runCode', () => {
     const result = await runCode('nonexistent-interpreter-xyz', 'print(1)', undefined, 5000, controller.signal)
     expect(result.ok).toBe(false)
     expect(result.exit_code).toBe(-1)
-    expect(result.stderr).length > 0
+    expect(result.stderr.length).toBeGreaterThan(0)
   })
 })
 
