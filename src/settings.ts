@@ -21,8 +21,16 @@ import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-settings'
 import { resolveConfig, type InterpretersEntryConfig, type ResolvedConfig } from './config.js'
 
-/** The composition row id: the settings namespace / profile entry id. */
-export const SETTINGS_NAMESPACE = 'interpreters' as const
+/**
+ * The composition row id: the settings namespace / profile entry id.
+ *
+ * `settings.update(ns)` resolves `ns` against the Loader entry ids carried
+ * by the profile patch rows, so this must equal the `id` of the row this
+ * bundle's `cordis.patch.yml` inserts (`dsh-interpreters`), not the plugin's
+ * short display name. A mismatch makes every save fail with
+ * `No configurable plugin entry "<ns>"`.
+ */
+export const SETTINGS_NAMESPACE = 'dsh-interpreters' as const
 
 /** Read face the gateway and tool re-registration consume. */
 export interface InterpretersSettingsBridge {
